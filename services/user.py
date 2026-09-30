@@ -1,5 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
-from db.models import User
+
+User = get_user_model()
 
 
 @transaction.atomic
@@ -10,15 +12,15 @@ def create_user(
     first_name: str | None = None,
     last_name: str | None = None,
 ) -> User:
-    user = User(
-        username=username,
-        email=email or "",
-        first_name=first_name or "",
-        last_name=last_name or "",
-    )
-    user.set_password(password)
-    user.save()
-    return user
+    user_kwargs = {"username": username, "password": password}
+    if email:
+        user_kwargs["email"] = email
+    if first_name:
+        user_kwargs["first_name"] = first_name
+    if last_name:
+        user_kwargs["last_name"] = last_name
+
+    return User.objects.create_user(**user_kwargs)
 
 
 def get_user(user_id: int) -> User:
