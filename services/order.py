@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import QuerySet
@@ -10,12 +11,23 @@ User = get_user_model()
 @transaction.atomic
 def create_order(
     tickets: list[dict],
-    user: User,
-    date: str | None = None
+    username: str,
+    date: str | None = None,
 ) -> Order:
+    user = User.objects.get(username=username)
     order_kwargs = {"user": user}
+
     if date:
-        order_kwargs["created_at"] = date
+        if isinstance(date, str):
+            order_kwargs["created_at"] = datetime(
+                int(date[0:4]),
+                int(date[5:7]),
+                int(date[8:10]),
+                int(date[11:13]),
+                int(date[14:16]),
+            )
+        else:
+            order_kwargs["created_at"] = date
 
     order = Order.objects.create(**order_kwargs)
 

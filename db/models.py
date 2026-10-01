@@ -59,7 +59,8 @@ class MovieSession(models.Model):
 
 
 class Order(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=False, blank=True, null=True)
     user = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
